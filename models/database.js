@@ -21,9 +21,9 @@ let dbInstance = null;
 export const connectDB = async () => {
     try {
         const client = new MongoClient(connectionURI, {
-            serverApi: ServerApiVersion.v1,
-            strict: false,
-            deprecationErrors: true
+            serverApi: ServerApiVersion.v1
+            // strict: false,
+            // deprecationErrors: true
         });
         await client.connect();
         console.log('Connected to MongoDB');

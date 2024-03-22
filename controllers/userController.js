@@ -23,13 +23,37 @@ export const createUser = async (req, res) => {
             username,
             email,
             password: hashedPassword,
-            profilePicture: req.file ? req.file.path : null,
+            profilePicture: null
         });
 
-        res.status(201).json({ message: 'User registered successfully', userId: result.insertedId });
+        res.status(201).json({ message: 'User registered successfully', userId: result.insertedId.toString() });
     } catch (error) {
         console.error(error)
         res.status(500).json({ message: 'Server error while creating user' });
+    }
+};
+
+// Function to upload user profile picture
+export const uploadProfilePicture = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const db = getDB();
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).json({ message: 'No file uploaded.' });
+        }
+
+        // Update user document with profile picture file path
+        await db.collection('users').updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: { profilePicture: file.path } }
+        );
+
+        res.status(200).json({ message: 'Profile picture uploaded successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error while uploading profile picture' });
     }
 };
 
@@ -38,15 +62,17 @@ export const retriveDetails = async (req, res) => {
         const db = getDB();
         const userId = new ObjectId(req.params.userId);
         
-        const user = await db.collection('Users').findOne({ _id: userId });
+        const user = await db.collection('users').findOne({ _id: userId });
 
         if (!user) {
-            return res.status(404).send('User not found.');
+            return res.status(404).json({ message: 'User not found.' });
         }
 
-        res.status(200).json(user);
+        const { password, ...userWithoutPassword } = user;
+
+        res.status(200).json(userWithoutPassword); res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ message: 'Server error while retrieving user details' });
     }
 };
 

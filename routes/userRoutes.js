@@ -1,5 +1,5 @@
 import express from 'express';
-import { createUser, retriveDetails } from '../controllers/userController.js';
+import { createUser, retriveDetails, uploadProfilePicture } from '../controllers/userController.js';
 import multer from 'multer';
 
 
@@ -18,7 +18,9 @@ const upload = multer({
 
 const router = express.Router();
 
-router.post('/register', upload.single('profilePicture'), createUser);
+
+router.post('/register', createUser);
+router.post('/:userId/upload', upload.single('profilePicture'), uploadProfilePicture);
 router.get('/:userId', retriveDetails);
 
 export default router;

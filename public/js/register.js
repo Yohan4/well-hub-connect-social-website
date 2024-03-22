@@ -125,7 +125,15 @@ function validateRegisterForm(event) {
     }
 
     if (isValid) {
-        sendToServer(usernameValue, emailValue, passwordValue, profilePictureInput.files[0]);
+        sendJSONToServer(usernameValue, emailValue, passwordValue, function(err, response) {
+            if (err) {
+                console.error(err);
+            } else {
+                if (profilePictureInput.files[0]) {
+                    sendFile(response.userId, profilePictureInput.files[0]);
+                }
+            }
+        });
     }
 };
 
@@ -190,33 +198,44 @@ export function loadRegisterPage(){
     validationListeners();      
 }
 
-// send new userdata to server
-function sendToServer(usernameValue, emailValue, passwordValue){
-    const formData = new FormData();
-    formData.append('username', usernameValue);
-    formData.append('email', emailValue);
-    formData.append('password', passwordValue);
 
-    const profileInput = document.getElementById('profile-picture');
-    if (profileInput.files[0]) {
-        formData.append('profilePicture', profileInput.files[0]);
-    }
-
-    let xhttp = new XMLHttpRequest();
-    xhttp.open('POST', '/api/users/register', true); 
-    xhttp.send(formData);
-    xhttp.onreadystatechange = function() {
+// Function to send json data to server
+function sendJSONToServer(usernameValue, emailValue, passwordValue, callback) {
+    const xhttp = new XMLHttpRequest();
+    xhttp.open('POST', '/api/users/register', true);
+    xhttp.setRequestHeader('Content-Type', 'application/json');
+    xhttp.onreadystatechange = function () {
         if (this.readyState === 4 && this.status === 201) {
-            console.log('Registration Successful');
-            
+            callback(null, JSON.parse(this.responseText));
         } else if (this.readyState === 4) {
-            console.error('Registration Failed');
-            
+            callback(new Error('Registration failed'));
         }
     };
-
-};
-
-
-
+    
+    const userObject = JSON.stringify({
+        username: usernameValue,
+        email: emailValue,
+        password: passwordValue
+    });
+  
+    xhttp.send(userObject);
+}
+  
+// Function to send image file to server
+function sendFile(userId, file) {
+    const formData = new FormData();
+    formData.append('profilePicture', file);
+    
+    const xhtp = new XMLHttpRequest();
+    xhtp.open('POST', '/api/users/' + userId + '/upload', true); 
+    xhtp.onreadystatechange = function () {
+        if (this.readyState === 4 && this.status === 200) {
+            console.log('File upload successful');
+        } else if (this.readyState === 4) {
+            console.error('File upload failed');
+        }
+    };
+  
+    xhtp.send(formData);
+}
 
