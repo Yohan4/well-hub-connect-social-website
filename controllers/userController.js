@@ -1,6 +1,52 @@
+//userContoller.js
 import { getDB } from '../models/database.js';
 import { ObjectId } from 'mongodb';
 import bcrypt from 'bcrypt';
+
+
+
+export const loginUser = async (req, res) => {
+    try {
+        const db = getDB();
+        const { username, password } = req.body;
+        const user = await db.collection('users').findOne({ username });
+
+        if (!user) {
+            return res.status(401).json({ message: 'Authentication failed.' });
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (passwordMatch) {
+            req.session.userId = user._id;
+            res.json({ message: 'Logged in successfully' });
+        } else {
+            res.status(401).json({ message: 'Authentication failed.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error during login' });
+    }
+};
+
+export const logoutUser = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Error logging out' });
+        }
+        res.clearCookie('connect.sid'); 
+        res.json({ message: 'Logged out successfully' });
+    });
+};
+
+
+export const checkSession = (req, res) => {
+    if (req.session.userId) {
+        res.json({ isLoggedIn: true });
+    } else {
+        res.json({ isLoggedIn: false });
+    }
+};
 
 export const createUser = async (req, res) => {
     try {
@@ -13,7 +59,7 @@ export const createUser = async (req, res) => {
 
         const existingUser = await db.collection('users').findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
-            return res.status(409).json({ message: 'Username or email already exists.' });
+            return res.status(409).json({ message: 'Registration failed! Username or email already exists.' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -23,10 +69,18 @@ export const createUser = async (req, res) => {
             username,
             email,
             password: hashedPassword,
-            profilePicture: null
         });
-
-        res.status(201).json({ message: 'User registered successfully', userId: result.insertedId.toString() });
+        
+        
+        req.session.save(err => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ message: 'Internal server error on saving session.' });
+            }
+            req.session.userId = result.insertedId;
+            res.status(201).json({ message: 'User registered successfully', userId: result.insertedId.toString() });
+        });
+        
     } catch (error) {
         console.error(error)
         res.status(500).json({ message: 'Server error while creating user' });
@@ -61,7 +115,7 @@ export const retriveDetails = async (req, res) => {
     try {
         const db = getDB();
         const userId = new ObjectId(req.params.userId);
-        
+
         const user = await db.collection('users').findOne({ _id: userId });
 
         if (!user) {
@@ -69,8 +123,7 @@ export const retriveDetails = async (req, res) => {
         }
 
         const { password, ...userWithoutPassword } = user;
-
-        res.status(200).json(userWithoutPassword); res.status(200).json(user);
+        res.status(200).json(userWithoutPassword);
     } catch (error) {
         res.status(500).json({ message: 'Server error while retrieving user details' });
     }

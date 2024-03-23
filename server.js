@@ -1,6 +1,7 @@
 import express from 'express';
 import userRoutes from './routes/userRoutes.js';
-import { connectDB } from './models/database.js'; 
+import { connectDB } from './models/database.js';
+import session from 'express-session'; 
 
 
 // Initialise express
@@ -13,7 +14,26 @@ app.use(express.json());
 // serve static file
 app.use(express.static("public"));
 
+//configure express to use express session
+app.use(session({
+    secret: 'cst2120 secret',  
+    resave: false,              
+    saveUninitialized: false, 
+    cookie: {         
+        maxAge: 600000
+    }
+}));
+
+// Middleware to initialize the session
+app.use((req, res, next) => {
+    if (!req.session) {
+        req.session = {};
+    }
+    next();
+});
+
 app.use('/api/users', userRoutes);
+
 
 connectDB()
     .then(() => {

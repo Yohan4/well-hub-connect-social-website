@@ -1,5 +1,6 @@
+//register.js
 import { renderHeader, renderFooter, closeButtonListener,setupEventListeners } from './common.js';
-
+import { checkLoginStatus } from './login.js';
 
 function validationListeners(){
     let username = document.getElementById("username");
@@ -99,35 +100,27 @@ function validateRegisterForm(event) {
     if (usernameError) {
         displayValidationMessage(document.getElementById('username-message'), usernameError);
         isValid = false;
-    } else {
-        displayValidationMessage(document.getElementById('username-message'), '');
-    }
+    } 
 
     if (emailError) {
         displayValidationMessage(document.getElementById('email-message'), emailError);
         isValid = false;
-    } else {
-        displayValidationMessage(document.getElementById('email-message'), '');
     }
 
     if (passwordError) {
         displayValidationMessage(document.getElementById('password-message'), passwordError);
         isValid = false;
-    } else {
-        displayValidationMessage(document.getElementById('password-message'), '');
-    }
+    } 
 
     if (!profilePictureInput.files.length) {
         displayValidationMessage(document.getElementById('profile-message'), 'Profile picture cannot be empty');
         isValid = false;
-    } else {
-        displayValidationMessage(document.getElementById('profile-message'), '');
     }
 
     if (isValid) {
         sendJSONToServer(usernameValue, emailValue, passwordValue, function(err, response) {
             if (err) {
-                console.error(err);
+                alert(err);
             } else {
                 if (profilePictureInput.files[0]) {
                     sendFile(response.userId, profilePictureInput.files[0]);
@@ -205,10 +198,12 @@ function sendJSONToServer(usernameValue, emailValue, passwordValue, callback) {
     xhttp.open('POST', '/api/users/register', true);
     xhttp.setRequestHeader('Content-Type', 'application/json');
     xhttp.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 201) {
-            callback(null, JSON.parse(this.responseText));
-        } else if (this.readyState === 4) {
-            callback(new Error('Registration failed'));
+        if (this.readyState === 4) {
+            if (this.status === 201) {
+                callback(null, JSON.parse(this.responseText));
+            } else {
+                callback(JSON.parse(this.responseText).message);
+            }
         }
     };
     
@@ -229,13 +224,41 @@ function sendFile(userId, file) {
     const xhtp = new XMLHttpRequest();
     xhtp.open('POST', '/api/users/' + userId + '/upload', true); 
     xhtp.onreadystatechange = function () {
-        if (this.readyState === 4 && this.status === 200) {
-            console.log('File upload successful');
-        } else if (this.readyState === 4) {
-            console.error('File upload failed');
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                console.log('File upload successful');
+                alert("Registration successful!");
+                clearAndRedirect();
+            } else {
+                console.error('File upload failed');
+                alert("Registration failed. Please try again.");
+            }
         }
     };
   
     xhtp.send(formData);
 }
+
+
+function clearAndRedirect() {
+    let usernameInput = document.getElementById("username");
+    let emailInput = document.getElementById("email");
+    let passwordInput = document.getElementById("password");
+    let profilePictureInput = document.getElementById('profile-picture');
+    usernameInput.value = '';
+    emailInput.value = '';
+    passwordInput.value = '';
+    profilePictureInput.value = '';
+    checkLoginStatus();
+    window.location.hash = "#/home";
+   
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkLoginStatus();
+});
+
+
+
+
 

@@ -1,5 +1,5 @@
 import { renderHeader, renderFooter, setupEventListeners } from './common.js';
-import { loadLoginPage } from './login.js';
+import { loadLoginPage, checkLoginStatus} from './login.js';
 import { loadRegisterPage} from './register.js'; 
 import { renderHeroSection, renderSubHeroSection, renderframeSection } from './home.js';
 import { profilePage} from './profile.js';
@@ -27,41 +27,76 @@ function navigateTo(hash) {
     else if (hash.startsWith("#/sports/")) {
         const communityNameOne = hash.split("#/sports/")[1];
         sports(communityNameOne);
+      
     }
     else if (hash.startsWith("#/health/")) {
         const communityNameTwo = hash.split("#/health/")[1];
         healthy(communityNameTwo);
+        
     }
     else if (hash.startsWith("#/vegetarian/")) {
         const communityNameThree = hash.split("#/vegetarian/")[1];
         vegetarian(communityNameThree);
+       
     }
     else if (hash.startsWith("#/wellbeing/")) {
         const communityNameFour = hash.split("#/wellbeing/")[1];
         wellbeing(communityNameFour);
+       
     }
     else {
         switch (hash) {
             case "#/register":
                 loadRegisterPage();
+                checkLoginStatus();
                 break;
             case "#/login":
                 loadLoginPage();
+                checkLoginStatus();
                 break;
             case "#/create":
                 createPostPage();
+                checkLoginStatus(function(isLoggedIn) {
+                    if (isLoggedIn) {
+                        createPostPage();
+                    } else {
+                        window.location.hash = "#/login";
+                    }
+                });
                 break;
             case "#/feed":
                 feedPage();
+                checkLoginStatus(function(isLoggedIn) {
+                    if (isLoggedIn) {
+                        feedPage();
+                    } else {
+                        window.location.hash = "#/login";
+                    }
+                });
                 break;
             case "#/communities":
                 communityPage();
+                checkLoginStatus(function(isLoggedIn) {
+                    if (isLoggedIn) {
+                        communityPage();
+                    } else {
+                        window.location.hash = "#/login";
+                    }
+                });
             break;
             case "#/users":
                 usersPage();
+                checkLoginStatus(function(isLoggedIn) {
+                    if (isLoggedIn) {
+                        usersPage();
+                    } else {
+                        window.location.hash = "#/login";
+                    }
+                });
                 break;
             default :
                 loadHomePage();
+                checkLoginStatus();
                 break;
         }
     }
@@ -127,7 +162,6 @@ function initializeSlideshow() {
         }
     }
 }
-
 
 
 
