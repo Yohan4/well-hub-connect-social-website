@@ -1,3 +1,5 @@
+//server.js
+
 import express from 'express';
 import userRoutes from './routes/userRoutes.js';
 import { connectDB } from './models/database.js';

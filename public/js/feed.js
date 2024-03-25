@@ -1,3 +1,5 @@
+// feed.js
+
 import { renderHeader, renderFooter, searchbar, setupEventListeners} from './common.js';
 
 // function to load feed page
@@ -6,26 +8,38 @@ export function feedPage(){
     app.innerHTML = `   ${renderHeader()}
                         ${searchbar()}
                         <!-- Feed page -->
-                        <div class="post-container">
-                            <h2 class="post-user">Zabine Salah</h2>
-                            <div class="post-community-name">Sport Enthusiast</div>
-                            <div class="post">
-                                <img src="./assets/images/swimming-post.jpg" alt="Swimming Post image" class="post-image">
-                                <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
-                                <p class="post-caption">Just finished an amazing 5k swim, feeling great! #Swimming #Fitness</p>
-                            </div>
-                        </div>
+                        <div id="feed-container"></div>
+                        ${renderFooter()}
+                    `;
 
+    // Make an AJAX request to retrieve the user's post
+    fetch('/api/users/posts/feed')
+        .then(response => response.json())
+        .then(posts => {
+            const feedContainer = document.getElementById('feed-container');
+
+            if (posts.length === 0) {
+                feedContainer.innerHTML = '<p>No posts available.</p>';
+            } else {
+                posts.forEach(post => {
+                    const postHTML = `
                         <div class="post-container">
-                            <h2 class="post-user">Diogo Jota</h2>
-                            <div class="post-community-name">Healthy Diet</div>
+                            <h2 class="post-user">${post.createdBy.username}</h2>
+                            <div class="post-community-name">${post.community}</div>
                             <div class="post">
-                                <img src="./assets/images/juice-post.webp" alt="Juice Post image" class="post-image">
+                                <img src="/assets/images/${post.image}" alt="${post.postName}" class="post-image">
                                 <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
-                                <p class="post-caption">Starting the day with a fresh green juice. #HealthyLiving</p>
+                                <p class="post-caption">${post.description}</p>
                             </div>
-                        </div>
-                        ${renderFooter()}`
+                        </div>`;
+                    feedContainer.innerHTML += postHTML;
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while loading the feed');
+        });
     setupEventListeners()                  
 }
 

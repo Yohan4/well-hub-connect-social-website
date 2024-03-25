@@ -180,7 +180,7 @@ function clearAndRedirect() {
     window.location.hash = "#/home";
 }
 
-function loginLogout(isLoggedIn) {
+export function loginLogout(isLoggedIn) {
     const loginButton = document.getElementById('login-button');
     if (isLoggedIn) {
         loginButton.textContent = 'LOGOUT';
@@ -214,5 +214,3 @@ export function checkLoginStatus(callback) {
     };
     xhttp.send();
 }
-
-

@@ -1,3 +1,4 @@
+// community.js
 import { renderHeader, renderFooter, searchbar, setupEventListeners} from './common.js';
 
 // function to load community page
@@ -42,6 +43,7 @@ export function communityPage(){
                             </div>
                         </div>
                         ${renderFooter()}`
+            
     setupEventListeners()                  
 }
 
@@ -51,16 +53,38 @@ export function sports(sports){
     app.innerHTML = `   ${renderHeader()}
                         <h1 class="username-title">${sports}'s Page</h1>
                         ${searchbar()}
-                        <div class="post-container">
-                            <h2 class="post-user">Zabine Salah</h2>
-                            <div class="post-community-name">Sport Enthusiast</div>
-                            <div class="post">
-                                <img src="./assets/images/swimming-post.jpg" alt="Swimming Post image" class="post-image">
-                                <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
-                                <p class="post-caption">Just finished an amazing 5k swim, feeling great! #Swimming #Fitness</p>
-                            </div>
-                        </div>
+                        <div class="no-post-container"> </div>
                         ${renderFooter()}`
+    
+    // Make an AJAX request to retrieve posts for the sports community
+    fetch(`/api/users/posts/community/${sports}`)
+    .then(response => response.json())
+    .then(posts => {
+        const postContainer = document.querySelector('.no-post-container');
+
+        if (posts.length === 0) {
+            postContainer.innerHTML = '<p>No posts available.</p>';
+        } else {
+            posts.forEach(post => {
+                const postHTML = `
+                    <div class="post-container">
+                        <h2 class="post-user">${post.createdBy.username}</h2>
+                        <div class="post-community-name">${post.community}</div>
+                        <div class="post">
+                            <img src="/assets/images/${post.image}" alt="${post.postName}" class="post-image">
+                            <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
+                            <p class="post-caption">${post.description}</p>
+                        </div>
+                    </div>`;
+                postContainer.innerHTML += postHTML;
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while loading the Sports community posts');
+    });
+
     setupEventListeners(sports)                  
 }
 
@@ -70,16 +94,38 @@ export function healthy(health){
     app.innerHTML = `   ${renderHeader()}
                         <h1 class="username-title">${health}'s Page</h1>
                         ${searchbar()}
-                        <div class="post-container">
-                        <h2 class="post-user">Diogo Jota</h2>
-                        <div class="post-community-name">Healthy Diet</div>
-                        <div class="post">
-                            <img src="./assets/images/juice-post.webp" alt="Juice Post image" class="post-image">
-                            <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
-                            <p class="post-caption">Starting the day with a fresh green juice. #HealthyLiving</p>
-                        </div>
-                    </div>
+                        <div class="no-post-container"></div
                         ${renderFooter()}`
+
+    // Make an AJAX request to retrieve posts for the health community
+    fetch(`/api/users/posts/community/${health}`)
+    .then(response => response.json())
+    .then(posts => {
+        const postContainer = document.querySelector('.no-post-container');
+
+        if (posts.length === 0) {
+            postContainer.innerHTML = '<p>No posts available.</p>';
+        } else {
+            posts.forEach(post => {
+                const postHTML = `
+                    <div class="post-container">
+                        <h2 class="post-user">${post.createdBy.username}</h2>
+                        <div class="post-community-name">${post.community}</div>
+                        <div class="post">
+                            <img src="/assets/images/${post.image}" alt="${post.postName}" class="post-image">
+                            <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
+                            <p class="post-caption">${post.description}</p>
+                        </div>
+                    </div>`;
+                postContainer.innerHTML += postHTML;
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while loading the Health community posts');
+    });
+
     setupEventListeners(health)                  
 }
 
@@ -89,54 +135,79 @@ export function vegetarian(vegetarian){
     app.innerHTML = `   ${renderHeader()}
                         <h1 class="username-title">${vegetarian}'s Page</h1>
                         ${searchbar()}
-                        <div class="post-container">
-                        <h2 class="post-user">Moricio Pep</h2>
-                        <div class="post-community-name">Vegetarian lifestyle</div>
-                        <div class="post">
-                            <img src="./assets/images/salad.webp" alt="Juice Post image" class="post-image">
-                            <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
-                            <p class="post-caption">
-                                Enjoy people!
-                                Meditarian Quinoa Salad Recipe :
-                                1 cup quinoa
-                                2 cups water or vegetable broth
-                                1 can (15 ounces) chickpeas, drained and rinsed
-                                1 medium cucumber, diced
-                                1 bell pepper, diced
-                                1/2 red onion, finely chopped
-                                1 cup cherry tomatoes, halved
-                                1/2 cup Kalamata olives, pitted and sliced
-                                1/2 cup feta cheese, crumbled (optional for vegan)
-                                1/4 cup fresh parsley, chopped
-                                Salt and pepper to taste
-                            </p>
-                        </div>
-                    </div>
+                        <div class="no-post-container"></div
                         ${renderFooter()}`
+    
+    // Make an AJAX request to retrieve posts for the vegetarian community
+    fetch(`/api/users/posts/community/${vegetarian}`)
+    .then(response => response.json())
+    .then(posts => {
+        const postContainer = document.querySelector('.no-post-container');
+
+        if (posts.length === 0) {
+            postContainer.innerHTML = '<p>No posts available.</p>';
+        } else {
+            posts.forEach(post => {
+                const postHTML = `
+                    <div class="post-container">
+                        <h2 class="post-user">${post.createdBy.username}</h2>
+                        <div class="post-community-name">${post.community}</div>
+                        <div class="post">
+                            <img src="/assets/images/${post.image}" alt="${post.postName}" class="post-image">
+                            <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
+                            <p class="post-caption">${post.description}</p>
+                        </div>
+                    </div>`;
+                postContainer.innerHTML += postHTML;
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while loading the Vegetarian community posts');
+    });
+
     setupEventListeners(vegetarian)                  
 }
 
-// function to load mindfullness and wellbeing  page
+// function to load mindfullness and wellbeing page
 export function wellbeing(wellbeing){
     const app = document.getElementById('app');
     app.innerHTML = `   ${renderHeader()}
-                        <h1 class="username-title">${wellbeing}'s Page</h1>
+                        <h1 id="username-title">${wellbeing}'s Page</h1>
                         ${searchbar()}
-                        <div class="post-container">
-                        <h2 class="post-user">Chloe Wong</h2>
-                        <div class="post-community-name">Mindfulness and Wellbeing</div>
-                        <div class="post">
-                            <img src="./assets/images/Yoga.webp" alt="Yoga" class="post-image">
-                            <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
-                            <p class="post-caption">
-                            Join us for a serene journey amidst nature at 'Yoga in the Park' on March 30th. 
-                            Embrace the calm of sunset as we flow through poses that soothe the soul and unite body and mind. 
-                            Bring your mat, find your space, and be part of a community celebrating peace and wellness. 
-                            #YogaInThePark #FindYourZen
-                            </p>
-                        </div>
-                    </div>
+                        <div class="no-post-container"> </div
                         ${renderFooter()}`
+
+    // Make an AJAX request to retrieve posts for the wellbeing community
+    fetch(`/api/users/posts/community/${wellbeing}`)
+    .then(response => response.json())
+    .then(posts => {
+        const postContainer = document.querySelector('.no-post-container');
+
+        if (posts.length === 0) {
+            postContainer.innerHTML = '<p>No posts available.</p>';
+        } else {
+            posts.forEach(post => {
+                const postHTML = `
+                    <div class="post-container">
+                        <h2 class="post-user">${post.createdBy.username}</h2>
+                        <div class="post-community-name">${post.community}</div>
+                        <div class="post">
+                            <img src="/assets/images/${post.image}" alt="${post.postName}" class="post-image">
+                            <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
+                            <p class="post-caption">${post.description}</p>
+                        </div>
+                    </div>`;
+                postContainer.innerHTML += postHTML;
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while loading the Wellbeing community posts');
+    });
+
     setupEventListeners(wellbeing)                  
 }
 

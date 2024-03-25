@@ -1,5 +1,7 @@
+//main.js
+
 import { renderHeader, renderFooter, setupEventListeners } from './common.js';
-import { loadLoginPage, checkLoginStatus} from './login.js';
+import { loadLoginPage, checkLoginStatus, loginLogout } from './login.js';
 import { loadRegisterPage} from './register.js'; 
 import { renderHeroSection, renderSubHeroSection, renderframeSection } from './home.js';
 import { profilePage} from './profile.js';
@@ -27,7 +29,7 @@ function navigateTo(hash) {
     else if (hash.startsWith("#/sports/")) {
         const communityNameOne = hash.split("#/sports/")[1];
         sports(communityNameOne);
-      
+
     }
     else if (hash.startsWith("#/health/")) {
         const communityNameTwo = hash.split("#/health/")[1];
@@ -37,22 +39,26 @@ function navigateTo(hash) {
     else if (hash.startsWith("#/vegetarian/")) {
         const communityNameThree = hash.split("#/vegetarian/")[1];
         vegetarian(communityNameThree);
-       
+
     }
     else if (hash.startsWith("#/wellbeing/")) {
         const communityNameFour = hash.split("#/wellbeing/")[1];
         wellbeing(communityNameFour);
-       
+        
     }
     else {
         switch (hash) {
             case "#/register":
                 loadRegisterPage();
-                checkLoginStatus();
+                checkLoginStatus(function(isLoggedIn) {
+                    loginLogout(isLoggedIn);
+                });
                 break;
             case "#/login":
                 loadLoginPage();
-                checkLoginStatus();
+                checkLoginStatus(function(isLoggedIn) {
+                    loginLogout(isLoggedIn);
+                });
                 break;
             case "#/create":
                 createPostPage();
@@ -96,7 +102,9 @@ function navigateTo(hash) {
                 break;
             default :
                 loadHomePage();
-                checkLoginStatus();
+                checkLoginStatus(function(isLoggedIn) {
+                    loginLogout(isLoggedIn);
+                });
                 break;
         }
     }

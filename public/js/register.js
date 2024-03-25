@@ -66,7 +66,7 @@ const passwordValidation = (passValue) => {
         return "Password should have a minimum of 8 characters and have at least 1 symbol, digit, lowercase and uppercase letter!"
     }
 }
-   
+
 const displayValidationMessage = (messageBox, errorMessage) => {
     if (!errorMessage) {
         messageBox.textContent = "Valid";
@@ -212,10 +212,11 @@ function sendJSONToServer(usernameValue, emailValue, passwordValue, callback) {
         email: emailValue,
         password: passwordValue
     });
-  
+
     xhttp.send(userObject);
 }
-  
+
+
 // Function to send image file to server
 function sendFile(userId, file) {
     const formData = new FormData();
@@ -235,10 +236,9 @@ function sendFile(userId, file) {
             }
         }
     };
-  
+
     xhtp.send(formData);
 }
-
 
 function clearAndRedirect() {
     let usernameInput = document.getElementById("username");
@@ -251,12 +251,7 @@ function clearAndRedirect() {
     profilePictureInput.value = '';
     checkLoginStatus();
     window.location.hash = "#/home";
-   
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    checkLoginStatus();
-});
 
 
 
