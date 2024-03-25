@@ -3,7 +3,7 @@
 import { renderHeader, renderFooter, searchbar, setupEventListeners} from './common.js';
 
 // function to load feed page
-export function feedPage(){
+export function feedPage() {
     const app = document.getElementById('app');
     app.innerHTML = `   ${renderHeader()}
                         ${searchbar()}
@@ -13,6 +13,7 @@ export function feedPage(){
                     `;
 
     // Make an AJAX request to retrieve the user's post
+    console.log('Triggering AJAX request to retrieve user posts');
     fetch('/api/users/posts/feed')
         .then(response => response.json())
         .then(posts => {
@@ -27,7 +28,7 @@ export function feedPage(){
                             <h2 class="post-user">${post.createdBy.username}</h2>
                             <div class="post-community-name">${post.community}</div>
                             <div class="post">
-                                <img src="/assets/images/${post.image}" alt="${post.postName}" class="post-image">
+                                <img src="./assets/images/${post.image}" alt="${post.postName}" class="post-image">
                                 <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
                                 <p class="post-caption">${post.description}</p>
                             </div>
@@ -37,10 +38,11 @@ export function feedPage(){
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Error fetching user posts:', error);
             alert('An error occurred while loading the feed');
         });
-    setupEventListeners()                  
+
+    setupEventListeners();
 }
 
 

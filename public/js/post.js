@@ -113,7 +113,6 @@ function uploadImage(postId, formData) {
             alert(data.error);
         } else {
             alert('Post created successfully');
-            window.location.hash = '#/feed';
         }
     })
     .catch((error) => {

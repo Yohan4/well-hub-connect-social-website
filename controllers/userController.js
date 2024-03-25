@@ -17,7 +17,8 @@ export const loginUser = async (req, res) => {
         const passwordMatch = await bcrypt.compare(password, user.password);
 
         if (passwordMatch) {
-            req.session.userId = user._id;
+            req.session.userId = user._id.toString();
+            console.log('User logged in successfully. User ID:', req.session.userId);
             res.json({ message: 'Logged in successfully' });
         } else {
             res.status(401).json({ message: 'Authentication failed.' });
@@ -149,7 +150,7 @@ export const createPost = async (req, res) => {
             postName,
             description,
             community,
-            createdBy: req.session.userId,
+            createdBy: new ObjectId(req.session.userId),
             createdAt: new Date(),
         };
 
@@ -196,15 +197,17 @@ export const uploadPostImage = async (req, res) => {
     }
 };
 
-// Function to retrieve posts for the user's feed
+
 export const getFeedPosts = async (req, res) => {
+    console.log('getFeedPosts function called');
     try {
         const db = getDB();
+        // Convert session userId to ObjectId
         const userId = new ObjectId(req.session.userId);
 
         console.log('User ID:', userId);
 
-        // Retrieve posts created by the user
+        // Now match using the ObjectId
         const posts = await db.collection('posts')
             .aggregate([
                 { $match: { createdBy: userId } },
@@ -222,12 +225,20 @@ export const getFeedPosts = async (req, res) => {
 
         console.log('Retrieved posts:', posts);
 
-        res.status(200).json(posts);
+        // Ensure the response contains the formatted posts
+        const formattedPosts = posts.map(post => ({
+            ...post,
+            createdBy: post.createdBy.username, 
+        }));
+
+        res.status(200).json(formattedPosts);
     } catch (error) {
-        console.error(error);
+        console.error('Error in getFeedPosts:', error);
         res.status(500).json({ error: 'Server error while retrieving feed posts' });
     }
 };
+
+
 
 // Function to retrieve posts for a specific community
 export const getCommunityPosts = async (req, res) => {
