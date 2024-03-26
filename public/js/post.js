@@ -144,10 +144,10 @@ export function createPostPage(){
                                     <div class="post-label-items">
                                         <select id="community-choice" class="input">
                                             <option value="Choose Community" disabled selected>Choose Community</option>
-                                            <option value="Sports Enthusiasts">Sports Enthusiasts</option>
-                                            <option value="Healthy Diet">Healthy Diet</option>
-                                            <option value="Vegetarian Lifestyle">Vegetarian Lifestyle</option>
-                                            <option value="Mindfullness and wellbeing">Mindfullness and wellbeing</option>
+                                            <option value="Sports-Enthusiasts">Sports-Enthusiasts</option>
+                                            <option value="Healthy-Diet">Healthy-Diet</option>
+                                            <option value="Vegetarian-Lifestyle">Vegetarian-Lifestyle</option>
+                                            <option value="Mindfullness-and-wellbeing">Mindfullness-and-wellbeing</option>
                                         </select>
                                     </div>
                                     <div id="community-message"></div>

@@ -202,12 +202,9 @@ export const getFeedPosts = async (req, res) => {
     console.log('getFeedPosts function called');
     try {
         const db = getDB();
-        // Convert session userId to ObjectId
         const userId = new ObjectId(req.session.userId);
-
         console.log('User ID:', userId);
 
-        // Now match using the ObjectId
         const posts = await db.collection('posts')
             .aggregate([
                 { $match: { createdBy: userId } },
@@ -229,6 +226,7 @@ export const getFeedPosts = async (req, res) => {
         const formattedPosts = posts.map(post => ({
             ...post,
             createdBy: post.createdBy.username, 
+            createdById: post.createdBy._id,
         }));
         console.log('Formatted posts to send:', formattedPosts);
 
@@ -240,17 +238,16 @@ export const getFeedPosts = async (req, res) => {
 };
 
 
-
 // Function to retrieve posts for a specific community
 export const getCommunityPosts = async (req, res) => {
     try {
         const db = getDB();
-        const community = req.params.community;
+        const communityName = req.params.community;
+        console.log(`Fetching posts for community: '${communityName}'`);
 
-        // Retrieve posts belonging to the specified community
         const posts = await db.collection('posts')
             .aggregate([
-                { $match: { community: community } },
+                { $match: { community: communityName } },
                 {
                     $lookup: {
                         from: 'users',
@@ -263,11 +260,21 @@ export const getCommunityPosts = async (req, res) => {
             ])
             .toArray();
 
-        res.status(200).json(posts);
+        // Format the posts to include only the necessary information
+        const formattedPosts = posts.map(post => ({
+            ...post,
+            createdBy: post.createdBy.username,
+        }));
+
+        console.log('Formatted posts for community:', formattedPosts);
+
+        res.status(200).json(formattedPosts);
     } catch (error) {
-        console.error(error);
+        console.error('Error in getCommunityPosts:', error);
         res.status(500).json({ error: 'Server error while retrieving community posts' });
     }
 };
+
+
 
 

@@ -57,7 +57,8 @@ export function sports(sports){
                         ${renderFooter()}`
     
     // Make an AJAX request to retrieve posts for the sports community
-    fetch(`/api/users/posts/community/${sports}`)
+    // fetch(`/api/users/posts/community/${sports}`)
+    fetch(`/api/users/posts/community/${encodeURIComponent(sports)}`)
     .then(response => response.json())
     .then(posts => {
         const postContainer = document.querySelector('.no-post-container');
@@ -68,15 +69,16 @@ export function sports(sports){
             posts.forEach(post => {
                 const postHTML = `
                     <div class="post-container">
-                        <h2 class="post-user">${post.createdBy.username}</h2>
+                    <h2 class="post-user">${post.createdBy}</h2>
+                    <h3 class="post-title">${post.postName}</h3>
                         <div class="post-community-name">${post.community}</div>
                         <div class="post">
-                            <img src="/assets/images/${post.image}" alt="${post.postName}" class="post-image">
+                            <img src="./assets/images/${post.image}" alt="${post.postName}" class="post-image">
                             <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
                             <p class="post-caption">${post.description}</p>
                         </div>
                     </div>`;
-                postContainer.innerHTML += postHTML;
+                    postContainer.innerHTML += postHTML;
             });
         }
     })
@@ -98,7 +100,8 @@ export function healthy(health){
                         ${renderFooter()}`
 
     // Make an AJAX request to retrieve posts for the health community
-    fetch(`/api/users/posts/community/${health}`)
+    // fetch(`/api/users/posts/community/${health}`)
+    fetch(`/api/users/posts/community/${encodeURIComponent(health)}`)
     .then(response => response.json())
     .then(posts => {
         const postContainer = document.querySelector('.no-post-container');
@@ -109,15 +112,16 @@ export function healthy(health){
             posts.forEach(post => {
                 const postHTML = `
                     <div class="post-container">
-                        <h2 class="post-user">${post.createdBy.username}</h2>
+                    <h2 class="post-user">${post.createdBy}</h2>
+                    <h3 class="post-title">${post.postName}</h3>
                         <div class="post-community-name">${post.community}</div>
                         <div class="post">
-                            <img src="/assets/images/${post.image}" alt="${post.postName}" class="post-image">
+                            <img src="./assets/images/${post.image}" alt="${post.postName}" class="post-image">
                             <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
                             <p class="post-caption">${post.description}</p>
                         </div>
                     </div>`;
-                postContainer.innerHTML += postHTML;
+                    postContainer.innerHTML += postHTML;
             });
         }
     })
@@ -139,7 +143,8 @@ export function vegetarian(vegetarian){
                         ${renderFooter()}`
     
     // Make an AJAX request to retrieve posts for the vegetarian community
-    fetch(`/api/users/posts/community/${vegetarian}`)
+    // fetch(`/api/users/posts/community/${vegetarian}`)
+    fetch(`/api/users/posts/community/${encodeURIComponent(vegetarian)}`)
     .then(response => response.json())
     .then(posts => {
         const postContainer = document.querySelector('.no-post-container');
@@ -150,15 +155,16 @@ export function vegetarian(vegetarian){
             posts.forEach(post => {
                 const postHTML = `
                     <div class="post-container">
-                        <h2 class="post-user">${post.createdBy.username}</h2>
+                    <h2 class="post-user">${post.createdBy}</h2>
+                    <h3 class="post-title">${post.postName}</h3>
                         <div class="post-community-name">${post.community}</div>
                         <div class="post">
-                            <img src="/assets/images/${post.image}" alt="${post.postName}" class="post-image">
+                            <img src="./assets/images/${post.image}" alt="${post.postName}" class="post-image">
                             <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
                             <p class="post-caption">${post.description}</p>
                         </div>
                     </div>`;
-                postContainer.innerHTML += postHTML;
+                    postContainer.innerHTML += postHTML;
             });
         }
     })
@@ -180,7 +186,9 @@ export function wellbeing(wellbeing){
                         ${renderFooter()}`
 
     // Make an AJAX request to retrieve posts for the wellbeing community
-    fetch(`/api/users/posts/community/${wellbeing}`)
+    // fetch(`/api/users/posts/community/${wellbeing}`)
+    fetch(`/api/users/posts/community/${encodeURIComponent(wellbeing)}`)
+
     .then(response => response.json())
     .then(posts => {
         const postContainer = document.querySelector('.no-post-container');
@@ -191,15 +199,16 @@ export function wellbeing(wellbeing){
             posts.forEach(post => {
                 const postHTML = `
                     <div class="post-container">
-                        <h2 class="post-user">${post.createdBy.username}</h2>
+                    <h2 class="post-user">${post.createdBy}</h2>
+                    <h3 class="post-title">${post.postName}</h3>
                         <div class="post-community-name">${post.community}</div>
                         <div class="post">
-                            <img src="/assets/images/${post.image}" alt="${post.postName}" class="post-image">
+                            <img src="./assets/images/${post.image}" alt="${post.postName}" class="post-image">
                             <i class="fa-sharp fa-solid fa-heart post-like-icon"></i>
                             <p class="post-caption">${post.description}</p>
                         </div>
                     </div>`;
-                postContainer.innerHTML += postHTML;
+                    postContainer.innerHTML += postHTML;
             });
         }
     })
