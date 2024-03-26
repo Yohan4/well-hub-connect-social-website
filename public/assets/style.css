@@ -834,6 +834,11 @@ button:hover{
     margin-bottom: 10px;
 }
 
+.post-title {
+    color: #617a55; 
+    margin-bottom: 10px;
+}
+
 .post {
     position: relative;
     margin: auto;

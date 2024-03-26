@@ -230,6 +230,7 @@ export const getFeedPosts = async (req, res) => {
             ...post,
             createdBy: post.createdBy.username, 
         }));
+        console.log('Formatted posts to send:', formattedPosts);
 
         res.status(200).json(formattedPosts);
     } catch (error) {

@@ -18,6 +18,7 @@ export function feedPage() {
         .then(response => response.json())
         .then(posts => {
             const feedContainer = document.getElementById('feed-container');
+            feedContainer.innerHTML = '';
 
             if (posts.length === 0) {
                 feedContainer.innerHTML = '<p>No posts available.</p>';
@@ -25,7 +26,8 @@ export function feedPage() {
                 posts.forEach(post => {
                     const postHTML = `
                         <div class="post-container">
-                            <h2 class="post-user">${post.createdBy.username}</h2>
+                        <h2 class="post-user">${post.createdBy}</h2>
+                        <h3 class="post-title">${post.postName}</h3>
                             <div class="post-community-name">${post.community}</div>
                             <div class="post">
                                 <img src="./assets/images/${post.image}" alt="${post.postName}" class="post-image">
