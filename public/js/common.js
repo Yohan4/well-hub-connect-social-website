@@ -65,8 +65,8 @@ export function closeButtonListener(){
 
 // function for searchbar and its button below
 export function searchbar(){
-    return `        <!-- Searchbar Section and its buttons -->
-                    <div id="search-and-buttons">
+    return `    <!-- Searchbar Section and its buttons -->
+                <div id="search-and-buttons">
                     <div class="search-container">
                         <i class="fas fa-search"></i>
                         <input type="search" id="search-bar" placeholder="Search a community/content/people" aria-label="Search">
@@ -77,7 +77,8 @@ export function searchbar(){
                         <button class="button-three">My Communities</button>
                         <button class="button-four">Users</button>
                     </div>
-                </div>`;
+                </div>
+            `;
 }
 
 // Initialises event listeners to navigate to these pages

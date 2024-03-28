@@ -12,7 +12,7 @@ const encodedUsername = encodeURIComponent(userName);
 const encodedPassword = encodeURIComponent(password);
 
 //Create connection URI
-const connectionURI = `mongodb+srv://${encodedUsername}:${encodedPassword}@${server}/?retryWrites=true&w=majority`;
+export const connectionURI = `mongodb+srv://${encodedUsername}:${encodedPassword}@${server}/?retryWrites=true&w=majority`;
 console.log(connectionURI);
 
 

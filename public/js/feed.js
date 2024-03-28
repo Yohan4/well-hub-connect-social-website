@@ -41,7 +41,6 @@ export function feedPage() {
         })
         .catch(error => {
             console.error('Error fetching user posts:', error);
-            alert('An error occurred while loading the feed');
         });
 
     setupEventListeners();

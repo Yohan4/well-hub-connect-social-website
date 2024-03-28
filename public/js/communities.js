@@ -57,7 +57,6 @@ export function sports(sports){
                         ${renderFooter()}`
     
     // Make an AJAX request to retrieve posts for the sports community
-    // fetch(`/api/users/posts/community/${sports}`)
     fetch(`/api/users/posts/community/${encodeURIComponent(sports)}`)
     .then(response => response.json())
     .then(posts => {
@@ -100,7 +99,6 @@ export function healthy(health){
                         ${renderFooter()}`
 
     // Make an AJAX request to retrieve posts for the health community
-    // fetch(`/api/users/posts/community/${health}`)
     fetch(`/api/users/posts/community/${encodeURIComponent(health)}`)
     .then(response => response.json())
     .then(posts => {
@@ -143,7 +141,6 @@ export function vegetarian(vegetarian){
                         ${renderFooter()}`
     
     // Make an AJAX request to retrieve posts for the vegetarian community
-    // fetch(`/api/users/posts/community/${vegetarian}`)
     fetch(`/api/users/posts/community/${encodeURIComponent(vegetarian)}`)
     .then(response => response.json())
     .then(posts => {
@@ -186,7 +183,6 @@ export function wellbeing(wellbeing){
                         ${renderFooter()}`
 
     // Make an AJAX request to retrieve posts for the wellbeing community
-    // fetch(`/api/users/posts/community/${wellbeing}`)
     fetch(`/api/users/posts/community/${encodeURIComponent(wellbeing)}`)
 
     .then(response => response.json())

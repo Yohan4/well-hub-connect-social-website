@@ -69,6 +69,9 @@ export const createUser = async (req, res) => {
             username,
             email,
             password: hashedPassword,
+            following: [], 
+            followRequests: [],
+            followers: [],
         });
         
         
@@ -222,7 +225,6 @@ export const getFeedPosts = async (req, res) => {
 
         console.log('Retrieved posts:', posts);
 
-        // Ensure the response contains the formatted posts
         const formattedPosts = posts.map(post => ({
             ...post,
             createdBy: post.createdBy.username, 
@@ -260,7 +262,6 @@ export const getCommunityPosts = async (req, res) => {
             ])
             .toArray();
 
-        // Format the posts to include only the necessary information
         const formattedPosts = posts.map(post => ({
             ...post,
             createdBy: post.createdBy.username,
@@ -275,6 +276,174 @@ export const getCommunityPosts = async (req, res) => {
     }
 };
 
+export const getSuggestedUsers = async (req, res) => {
+    console.log('getSuggestedUsers function called');
+    try {
+        const db = getDB();
+        // Use the same variable name `userId` that you've declared and logged.
+        const userId = new ObjectId(req.session.userId);
+        console.log('User ID:', userId);
 
+        const users = await db.collection('users')
+            .find({ _id: { $ne: userId } }) 
+            .toArray();
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error fetching suggested users:', error);
+        res.status(500).json({ error: 'Server error while retrieving suggested users' });
+    }
+};
+
+
+export const getCurrentUser = async (req, res) => {
+    console.log('getCurrentUser function called');
+
+    // Check if the session and userId exist
+    if (!req.session || !req.session.userId) {
+        console.error('Session or userId not found.');
+        console.error('Session:', req.session);
+        return res.status(401).json({ message: 'Not authorized.' });
+    }
+
+    try {
+        const db = getDB();
+        const currentUserId = new ObjectId(req.session.userId);
+
+        // Log the currentUserId for debugging
+        console.log('Fetching details for user ID:', currentUserId);
+
+        const user = await db.collection('users').findOne({ _id: currentUserId });
+
+        // Log the user object retrieved from the database
+        console.log('Retrieved user:', user);
+
+        if (!user) {
+            console.error('User not found with ID:', currentUserId);
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        const { password, ...userWithoutPassword } = user;
+        console.log('User data to send:', userWithoutPassword);
+        res.status(200).json(userWithoutPassword);
+    } catch (error) {
+        console.error('Error fetching current user:', error);
+        console.error('Error stack trace:', error.stack);
+        res.status(500).json({ error: 'Server error while retrieving current user' });
+    }
+};
+
+
+// export const getFollowedUsers = async (req, res) => {
+//     try {
+//         const db = getDB();
+//         const loggedInUserId = new ObjectId(req.session.userId);
+
+//         const user = await db.collection('users').findOne({ _id: loggedInUserId });
+
+//         if (!user.following) {
+//             return res.status(200).json([]);
+//         }
+
+//         const followedUsers = await db.collection('users')
+//             .find({ _id: { $in: user.following } })
+//             .toArray();
+
+//         res.status(200).json(followedUsers);
+//     } catch (error) {
+//         console.error('Error fetching followed users:', error);
+//         res.status(500).json({ error: 'Server error while retrieving followed users' });
+//     }
+// };
+
+
+// // Function to follow a user
+// export const followUser = async (req, res) => {
+//     try {
+//         const db = getDB();
+//         const currentUserId = new ObjectId(req.session.userId);
+//         const userIdToFollow = new ObjectId(req.params.userId);
+
+//         // Update current user's following array
+//         await db.collection('users').updateOne(
+//             { _id: currentUserId },
+//             { $addToSet: { following: userIdToFollow } }
+//         );
+
+//         // Add follow request to the user being followed
+//         await db.collection('users').updateOne(
+//             { _id: userIdToFollow },
+//             { $addToSet: { followRequests: currentUserId } }
+//         );
+
+//         res.status(200).json({ message: 'Follow request sent successfully' });
+//     } catch (error) {
+//         console.error('Error following user:', error);
+//         res.status(500).json({ error: 'Server error while following user' });
+//     }
+// };
+
+// // Function to accept a follow request
+// export const acceptFollowRequest = async (req, res) => {
+//     try {
+//         const db = getDB();
+//         const currentUserId = new ObjectId(req.session.userId);
+//         const userIdToAccept = new ObjectId(req.params.userId);
+
+//         // Remove follow request from current user's followRequests array
+//         await db.collection('users').updateOne(
+//             { _id: currentUserId },
+//             { $pull: { followRequests: userIdToAccept } }
+//         );
+
+//         // Add current user to the follower's following array
+//         await db.collection('users').updateOne(
+//             { _id: userIdToAccept },
+//             { $addToSet: { following: currentUserId } }
+//         );
+
+//         res.status(200).json({ message: 'Follow request accepted successfully' });
+//     } catch (error) {
+//         console.error('Error accepting follow request:', error);
+//         res.status(500).json({ error: 'Server error while accepting follow request' });
+//     }
+// };
+
+// // Function to unfollow a user
+// export const unfollowUser = async (req, res) => {
+//     try {
+//         const db = getDB();
+//         const currentUserId = new ObjectId(req.session.userId);
+//         const userIdToUnfollow = new ObjectId(req.params.userId);
+
+//         // Remove the user from current user's following array
+//         await db.collection('users').updateOne(
+//             { _id: currentUserId },
+//             { $pull: { following: userIdToUnfollow } }
+//         );
+
+//         res.status(200).json({ message: 'Unfollowed user successfully' });
+//     } catch (error) {
+//         console.error('Error unfollowing user:', error);
+//         res.status(500).json({ error: 'Server error while unfollowing user' });
+//     }
+// };
+
+// // Function to get the number of follow requests for the current user
+// export const getFollowRequestCount = async (req, res) => {
+//     try {
+//         const db = getDB();
+//         const currentUserId = new ObjectId(req.session.userId);
+
+//         const user = await db.collection('users').findOne({ _id: currentUserId });
+
+//         const followRequestCount = user.followRequests ? user.followRequests.length : 0;
+
+//         res.status(200).json({ count: followRequestCount });
+//     } catch (error) {
+//         console.error('Error getting follow request count:', error);
+//         res.status(500).json({ error: 'Server error while getting follow request count' });
+//     }
+// };
 
 

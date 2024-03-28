@@ -1,8 +1,8 @@
 //userRoutes.js
 import express from 'express';
 import { createUser, retriveDetails, loginUser, logoutUser, uploadProfilePicture,
-        checkSession, createPost, getFeedPosts, getCommunityPosts, uploadPostImage } 
-        from '../controllers/userController.js';
+        checkSession, createPost, getFeedPosts, getCommunityPosts, uploadPostImage,
+        getSuggestedUsers, getCurrentUser } from '../controllers/userController.js';
 
 import multer from 'multer';
 import path from 'path';
@@ -43,8 +43,18 @@ router.post('/posts/:postId/upload', upload.single('image'), uploadPostImage);
 router.get('/posts/feed', getFeedPosts);
 router.get('/posts/community/:community', getCommunityPosts);
 router.get('/:userId', retriveDetails);
+router.get('/suggestions', getSuggestedUsers);
+router.get('/current', getCurrentUser);
 
 export default router;
 
 
+// router.get('/following', getFollowedUsers);
+// router.post('/follow/:userId', followUser);
+// router.post('/follow/:userId', followUser);
+// router.post('/accept-follow/:userId', acceptFollowRequest);
+// router.post('/unfollow/:userId', unfollowUser);
+// router.get('/follow-request-count', getFollowRequestCount);
 
+// , getFollowedUsers, followUser, acceptFollowRequest,
+//         unfollowUser, getFollowRequestCount
