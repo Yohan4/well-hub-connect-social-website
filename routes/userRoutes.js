@@ -2,7 +2,7 @@
 import express from 'express';
 import { createUser, loginUser, logoutUser, uploadProfilePicture,
         checkSession, createPost, getFeedPosts, getCommunityPosts, uploadPostImage,
-        getCurrentUser, getSuggestedUsers } from '../controllers/userController.js';
+        getCurrentUser, getSuggestedUsers, followUser, unfollowUser,getFollowedUsers } from '../controllers/userController.js';
 
 import multer from 'multer';
 import path from 'path';
@@ -44,15 +44,17 @@ router.get('/posts/feed', getFeedPosts);
 router.get('/posts/community/:community', getCommunityPosts);
 router.get('/current', getCurrentUser);
 router.get('/suggestions', getSuggestedUsers);
-
+router.post('/follow/:userId', followUser);
+router.post('/unfollow/:userId', unfollowUser);
+router.get('/following', getFollowedUsers);
 
 export default router;
 
 
-// router.get('/following', getFollowedUsers);
-// router.post('/follow/:userId', followUser);
+
+
 // router.post('/accept-follow/:userId', acceptFollowRequest);
-// router.post('/unfollow/:userId', unfollowUser);
+
 // router.get('/follow-request-count', getFollowRequestCount);
 
 // , getFollowedUsers, followUser, acceptFollowRequest,

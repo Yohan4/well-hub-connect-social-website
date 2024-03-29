@@ -1,28 +1,14 @@
-//users.js
-
-import { renderHeader, renderFooter, searchbar, setupEventListeners, checkLoginStatus, loginLogout} from './common.js';
+import { renderHeader, renderFooter, searchbar, setupEventListeners, checkLoginStatus, loginLogout } from './common.js';
 
 // Function to render user cards
 function renderUserCard(user, isFollowing) {
     const buttonText = isFollowing ? 'Following' : 'Follow';
 
     return `
-        <div class="users-card">
+        <div class="users-card" data-user-id="${user._id}">
             <img src="./assets/images/${user.profilePicture}" alt="profile picture">
             <a href="#/user/${user.username}" class="people-name">${user.username}</a>
             <button class="follow-button" data-user-id="${user._id}">${buttonText}</button>
-        </div>
-    `;
-}
-
-// Function to render following user cards
-function renderFollowingUserCard(user) {
-    return `
-        <div class="users-card-following">
-            <i class="fa-sharp fa-solid fa-star shaded-icon"></i>
-            <img src="./assets/images/${user.profilePicture}" alt="profile picture">
-            <a href="#/user/${user.username}" class="people-name">${user.username}</a>
-            <button class="follow-button" data-user-id="${user._id}">Following</button>
         </div>
     `;
 }
@@ -36,56 +22,106 @@ export function usersPage() {
             <!-- Suggestions section -->
             <h2 class="section-heading">Suggestions ></h2>
             <div id="suggestions-container" class="users-row"></div>
-            <!-- Following section -->
-            <h2 class="section-heading">Following ></h2>
-            <div id="following-container" class="users-row"></div>
         </div>
         ${renderFooter()}
     `;
 
     // Fetch current user's details and suggested users concurrently
     console.log('Triggering AJAX requests to retrieve users');
-
     Promise.all([
-        fetch('/api/users/current'),
+        fetch('/api/users/current').then(response => response.json()).catch(error => {
+            console.error('Error fetching current user:', error);
+            return null;
+        }),
         fetch('/api/users/suggestions', {
             method: 'GET',
             credentials: 'same-origin',
+        }).then(response => response.json()).catch(error => {
+            console.error('Error fetching suggested users:', error);
+            return null;
         })
     ])
-        .then(responses => Promise.all(responses.map(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to fetch data: ${response.status}`);
-            }
-            return response.json();
-        })))
         .then(([currentUser, suggestedUsers]) => {
             console.log('Current user:', currentUser);
             console.log('Suggested users:', suggestedUsers);
 
+            const suggestionsContainer = document.getElementById('suggestions-container');
+            suggestionsContainer.innerHTML = '';
+
             if (Array.isArray(suggestedUsers)) {
-                const suggestionsContainer = document.getElementById('suggestions-container');
-                suggestionsContainer.innerHTML = '';
                 suggestedUsers.forEach(user => {
-                    suggestionsContainer.innerHTML += renderUserCard(user, false);
+                    const isFollowing = currentUser && currentUser.following && currentUser.following.includes(user._id);
+                    suggestionsContainer.innerHTML += renderUserCard(user, isFollowing);
                 });
             } else {
                 console.error('Expected an array of suggested users but received:', suggestedUsers);
             }
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            console.error('Error message:', error.message);
         });
-    
+
     checkLoginStatus(function(isLoggedIn) {
         loginLogout(isLoggedIn);
     });
 
     setupEventListeners();
+
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('follow-button')) {
+            const userId = event.target.dataset.userId;
+            const isFollowing = event.target.textContent === 'Following';
+
+            if (isFollowing) {
+                unfollowUser(userId);
+            } else {
+                followUser(userId);
+            }
+        }
+    });
 }
 
+function followUser(userId) {
+    fetch(`/api/users/follow/${userId}`, {
+        method: 'POST',
+        credentials: 'same-origin',
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Follow request sent successfully' || data.message === 'Now following user') {
+                const userCard = document.querySelector(`.users-card[data-user-id="${userId}"]`);
+                if (userCard) {
+                    const followButton = userCard.querySelector('.follow-button');
+                    followButton.textContent = 'Following';
+                } else {
+                    console.error('User card not found');
+                }
+            } else {
+                console.error('Failed to follow user:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error following user:', error);
+        });
+}
 
-
-
-
+function unfollowUser(userId) {
+    fetch(`/api/users/unfollow/${userId}`, {
+        method: 'POST',
+        credentials: 'same-origin',
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message === 'Unfollowed user successfully') {
+                const userCard = document.querySelector(`.users-card[data-user-id="${userId}"]`);
+                if (userCard) {
+                    const followButton = userCard.querySelector('.follow-button');
+                    followButton.textContent = 'Follow';
+                } else {
+                    console.error('User card not found');
+                }
+            } else {
+                console.error('Failed to unfollow user:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error unfollowing user:', error);
+        });
+}

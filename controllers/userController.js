@@ -70,7 +70,6 @@ export const createUser = async (req, res) => {
             email,
             password: hashedPassword,
             following: [], 
-            followRequests: [],
             followers: [],
         });
         
@@ -118,23 +117,6 @@ export const uploadProfilePicture = async (req, res) => {
     }
 };
 
-// export const retriveDetails = async (req, res) => {
-//     try {
-//         const db = getDB();
-//         const userId = new ObjectId(req.params.userId);
-
-//         const user = await db.collection('users').findOne({ _id: userId });
-
-//         if (!user) {
-//             return res.status(404).json({ message: 'User not found.' });
-//         }
-
-//         const { password, ...userWithoutPassword } = user;
-//         res.status(200).json(userWithoutPassword);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Server error while retrieving user details' });
-//     }
-// };
 
 export const createPost = async (req, res) => {
     try {
@@ -321,33 +303,9 @@ export const getSuggestedUsers = async (req, res) => {
         res.status(200).json(users);
     } catch (error) {
         console.error('Error fetching suggested users:', error);
-        console.error('Error stack trace:', error.stack);
         res.status(500).json({ error: 'Server error while retrieving suggested users' });
     }
 };
-
-export const getFollowedUsers = async (req, res) => {
-    try {
-        const db = getDB();
-        const loggedInUserId = new ObjectId(req.session.userId);
-
-        const user = await db.collection('users').findOne({ _id: loggedInUserId });
-
-        if (!user.following) {
-            return res.status(200).json([]);
-        }
-
-        const followedUsers = await db.collection('users')
-            .find({ _id: { $in: user.following } })
-            .toArray();
-
-        res.status(200).json(followedUsers);
-    } catch (error) {
-        console.error('Error fetching followed users:', error);
-        res.status(500).json({ error: 'Server error while retrieving followed users' });
-    }
-};
-
 
 // Function to follow a user
 export const followUser = async (req, res) => {
@@ -396,6 +354,26 @@ export const unfollowUser = async (req, res) => {
     }
 };
 
+export const getFollowedUsers = async (req, res) => {
+    try {
+        const db = getDB();
+        const loggedInUserId = new ObjectId(req.session.userId);
 
+        const user = await db.collection('users').findOne({ _id: loggedInUserId });
+
+        if (!user.following || user.following.length === 0) {
+            return res.status(200).json([]);
+        }
+
+        const followedUsers = await db.collection('users')
+            .find({ _id: { $in: user.following } })
+            .toArray();
+
+        res.status(200).json(followedUsers);
+    } catch (error) {
+        console.error('Error fetching followed users:', error);
+        res.status(500).json({ error: 'Server error while retrieving followed users' });
+    }
+};
 
 
