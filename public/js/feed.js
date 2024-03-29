@@ -1,6 +1,7 @@
 // feed.js
 
-import { renderHeader, renderFooter, searchbar, setupEventListeners} from './common.js';
+import { renderHeader, renderFooter, searchbar, setupEventListeners, checkLoginStatus, loginLogout} from './common.js';
+
 
 // function to load feed page
 export function feedPage() {
@@ -42,7 +43,9 @@ export function feedPage() {
         .catch(error => {
             console.error('Error fetching user posts:', error);
         });
-
+    checkLoginStatus(function(isLoggedIn) {
+        loginLogout(isLoggedIn);
+    });
     setupEventListeners();
 }
 

@@ -1,5 +1,5 @@
 //post.js
-import { renderHeader, renderFooter, searchbar, setupEventListeners} from './common.js';
+import { renderHeader, renderFooter, searchbar, setupEventListeners, checkLoginStatus, loginLogout} from './common.js';
 
 
 const postNameValidation = (postName) => {
@@ -171,6 +171,9 @@ export function createPostPage(){
                         ${renderFooter()}`
 
     formEventListener();
+    checkLoginStatus(function(isLoggedIn) {
+        loginLogout(isLoggedIn);
+    });
     setupEventListeners();                
 }
 

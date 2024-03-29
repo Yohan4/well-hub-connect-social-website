@@ -41,11 +41,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// app.get('/api/users/current', (req, res) => {
-//     console.log('Simplified route /api/users/current was hit');
-//     res.json({ message: 'Simplified route reached successfully' });
-// });
-
 app.use('/api/users', userRoutes);
 
 // Error handling middleware

@@ -1,7 +1,7 @@
 //main.js
 
-import { renderHeader, renderFooter, setupEventListeners } from './common.js';
-import { loadLoginPage, checkLoginStatus, loginLogout } from './login.js';
+import { renderHeader, renderFooter, setupEventListeners, loginLogout, checkLoginStatus } from './common.js';
+import { loadLoginPage } from './login.js';
 import { loadRegisterPage} from './register.js'; 
 import { renderHeroSection, renderSubHeroSection, renderframeSection } from './home.js';
 import { profilePage} from './profile.js';
@@ -25,25 +25,40 @@ function navigateTo(hash) {
     if (hash.startsWith("#/user/")) {
         const username = hash.split("#/user/")[1];
         profilePage(username); 
+        checkLoginStatus(function(isLoggedIn) {
+            loginLogout(isLoggedIn);
+        });
     } 
     else if (hash.startsWith("#/sports/")) {
         const communityNameOne = hash.split("#/sports/")[1];
         sports(communityNameOne);
+        checkLoginStatus(function(isLoggedIn) {
+            loginLogout(isLoggedIn);
+        });
 
     }
     else if (hash.startsWith("#/health/")) {
         const communityNameTwo = hash.split("#/health/")[1];
         healthy(communityNameTwo);
+        checkLoginStatus(function(isLoggedIn) {
+            loginLogout(isLoggedIn);
+        });
         
     }
     else if (hash.startsWith("#/vegetarian/")) {
         const communityNameThree = hash.split("#/vegetarian/")[1];
         vegetarian(communityNameThree);
+        checkLoginStatus(function(isLoggedIn) {
+            loginLogout(isLoggedIn);
+        });
 
     }
     else if (hash.startsWith("#/wellbeing/")) {
         const communityNameFour = hash.split("#/wellbeing/")[1];
         wellbeing(communityNameFour);
+        checkLoginStatus(function(isLoggedIn) {
+            loginLogout(isLoggedIn);
+        });
         
     }
     else {
@@ -124,7 +139,6 @@ function loadHomePage() {
     initializeSlideshow();
 }
 
-
 // function to implement carousel slideshow
 function initializeSlideshow() {
     const carousel = document.getElementById('carousel');
@@ -133,8 +147,7 @@ function initializeSlideshow() {
         const slides = document.querySelectorAll('.carousel-image');
         const totalSlides = slides.length;
 
-        if (totalSlides > 0) { 
-
+        if (totalSlides > 0) {
             function showSlide(number) {
                 slides.forEach((slide) => {
                     slide.classList.remove('active');
@@ -152,21 +165,10 @@ function initializeSlideshow() {
                 showSlide(current);
             }
 
-            // Change image every 5 Seconds
+            // Change image every 4 Seconds
             let interval = setInterval(() => {
                 moveSlide(1);
-            }, 5000);
-
-            // Pause on hover and resume on leave
-            carousel.addEventListener('mouseenter', () => {
-                clearInterval(interval);
-            });
-
-            carousel.addEventListener('mouseleave', () => {
-                interval = setInterval(() => {
-                    moveSlide(1);
-                }, 5000);
-            });
+            }, 4000);
         }
     }
 }

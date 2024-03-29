@@ -1,4 +1,5 @@
-import { renderHeader, renderFooter, searchbar, setupEventListeners} from './common.js';
+import { renderHeader, renderFooter, searchbar, setupEventListeners, checkLoginStatus, loginLogout} from './common.js';
+
 
 // fucntion to load profile page
 export function profilePage(username){
@@ -42,6 +43,9 @@ export function profilePage(username){
                             </form>
                         </div>
                         ${renderFooter()}`
+    checkLoginStatus(function(isLoggedIn) {
+        loginLogout(isLoggedIn);
+    });
     setupEventListeners(username)                  
 }
 

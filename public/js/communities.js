@@ -1,5 +1,6 @@
 // community.js
-import { renderHeader, renderFooter, searchbar, setupEventListeners} from './common.js';
+import { renderHeader, renderFooter, searchbar, setupEventListeners, checkLoginStatus, loginLogout} from './common.js';
+
 
 // function to load community page
 export function communityPage(){
@@ -43,7 +44,9 @@ export function communityPage(){
                             </div>
                         </div>
                         ${renderFooter()}`
-            
+    checkLoginStatus(function(isLoggedIn) {
+        loginLogout(isLoggedIn);
+    });    
     setupEventListeners()                  
 }
 

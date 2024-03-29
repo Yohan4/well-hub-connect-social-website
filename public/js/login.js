@@ -1,6 +1,6 @@
 //login.js
 
-import { renderHeader, renderFooter, closeButtonListener, setupEventListeners } from './common.js';
+import { renderHeader, renderFooter, closeButtonListener, setupEventListeners, login } from './common.js';
 
 function validationListeners(){
     let username = document.getElementById("username");
@@ -138,79 +138,3 @@ export function loadLoginPage(){
     validationListeners();                      
 }
 
-function login(username, password, callback) {
-    const xhttp = new XMLHttpRequest();
-    xhttp.open('POST', '/api/users/login', true);
-    xhttp.setRequestHeader('Content-Type', 'application/json');
-    xhttp.onreadystatechange = function () {
-        if (this.readyState === 4) {
-            if (this.status === 200 || this.status === 201) {
-                callback(null, JSON.parse(this.responseText));
-                alert("Login successful!");
-                clearAndRedirect();
-            } else {
-                callback(new Error('Login failed'), null);
-            }
-        }
-    };
-
-
-    const credentials = JSON.stringify({ username, password });
-    xhttp.send(credentials);
-}
-
-function logout() {
-    const xhttp = new XMLHttpRequest();
-    xhttp.open('GET', '/api/users/logout', true); 
-    xhttp.send();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState === 4 && (this.status === 200 || this.status === 201)) {
-            console.log('Logged out successfully');
-            checkLoginStatus();
-        }
-    };
-}
-
-function clearAndRedirect() {
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password')
-    usernameInput.value = '';
-    passwordInput.value = '';
-    checkLoginStatus();
-    window.location.hash = "#/home";
-}
-
-export function loginLogout(isLoggedIn) {
-    const loginButton = document.getElementById('login-button');
-    if (isLoggedIn) {
-        loginButton.textContent = 'LOGOUT';
-        loginButton.id = 'logout-button';
-        loginButton.removeEventListener('click', () => {
-            window.location.hash = '#/login';
-        });
-        loginButton.addEventListener('click', logout);
-    } else {
-        loginButton.textContent = 'LOGIN';
-        loginButton.id = 'login-button';
-        loginButton.removeEventListener('click', logout);
-        loginButton.addEventListener('click', () => {
-            window.location.hash = '#/login';
-        });
-    }
-}
-
-
-export function checkLoginStatus(callback) {
-    const xhttp = new XMLHttpRequest();
-    xhttp.open('GET', '/api/users/session-status', true);
-    xhttp.onreadystatechange = function() {
-        if (this.readyState === 4 && this.status === 200) {
-            const response = JSON.parse(this.responseText);
-            loginLogout(response.isLoggedIn);
-            if (callback) {
-                callback(response.isLoggedIn);
-            }
-        }
-    };
-    xhttp.send();
-}

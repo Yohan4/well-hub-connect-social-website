@@ -1,7 +1,7 @@
 //register.js
-import { renderHeader, renderFooter, closeButtonListener,setupEventListeners } from './common.js';
-import { checkLoginStatus } from './login.js';
-
+import { renderHeader, renderFooter, closeButtonListener,setupEventListeners,
+        checkLoginStatus } from './common.js';
+        
 function validationListeners(){
     let username = document.getElementById("username");
     let email = document.getElementById("email");
