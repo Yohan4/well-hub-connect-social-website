@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import bcrypt from 'bcrypt';
 
 
+// function to login
 export const loginUser = async (req, res) => {
     try {
         const db = getDB();
@@ -29,6 +30,7 @@ export const loginUser = async (req, res) => {
     }
 };
 
+// fucntion to logout
 export const logoutUser = (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -39,7 +41,7 @@ export const logoutUser = (req, res) => {
     });
 };
 
-
+// function to checksession
 export const checkSession = (req, res) => {
     if (req.session.userId) {
         res.json({ isLoggedIn: true });
@@ -48,6 +50,7 @@ export const checkSession = (req, res) => {
     }
 };
 
+// Function to create a user
 export const createUser = async (req, res) => {
     try {
         const db = getDB(); 
@@ -117,7 +120,7 @@ export const uploadProfilePicture = async (req, res) => {
     }
 };
 
-
+// Function to create a post
 export const createPost = async (req, res) => {
     try {
         const db = getDB();
@@ -150,6 +153,7 @@ export const createPost = async (req, res) => {
     }
 };
 
+// function to upload a post image
 export const uploadPostImage = async (req, res) => {
     try {
         const db = getDB();
@@ -182,7 +186,7 @@ export const uploadPostImage = async (req, res) => {
     }
 };
 
-
+// function to get post for feed
 export const getFeedPosts = async (req, res) => {
     console.log('getFeedPosts function called');
     try {
@@ -258,19 +262,15 @@ export const getCommunityPosts = async (req, res) => {
     }
 };
 
-
+// Function to get current loggedin user
 export const getCurrentUser = async (req, res) => {
     console.log('getCurrentUser function called');
     try {
         const db = getDB();
         const currentUserId = new ObjectId(req.session.userId);
-
-        // Log the currentUserId for debugging
         console.log('Fetching details for user ID:', currentUserId);
 
         const user = await db.collection('users').findOne({ _id: currentUserId });
-
-        // Log the user object retrieved from the database
         console.log('Retrieved user:', user);
 
         if (!user) {
@@ -287,25 +287,27 @@ export const getCurrentUser = async (req, res) => {
     }
 };
 
-
+// Function to get suggested users
 export const getSuggestedUsers = async (req, res) => {
-    console.log('getSuggestedUsers function called');
     try {
         const db = getDB();
         const userId = new ObjectId(req.session.userId);
-        console.log('User ID:', userId);
 
-        const users = await db.collection('users')
-            .find({ _id: { $ne: userId } })
+        // Fetch all users except the logged-in user
+        const suggestedUsers = await db.collection('users')
+            .find({ _id: { $ne: userId } }) 
+            .project({ password: 0 }) 
             .toArray();
 
-        console.log('Suggested users:', users);
-        res.status(200).json(users);
+        console.log('Suggested users:', suggestedUsers);
+        res.status(200).json(suggestedUsers);
     } catch (error) {
         console.error('Error fetching suggested users:', error);
         res.status(500).json({ error: 'Server error while retrieving suggested users' });
     }
 };
+
+
 
 // Function to follow a user
 export const followUser = async (req, res) => {
@@ -320,13 +322,13 @@ export const followUser = async (req, res) => {
             { $addToSet: { following: userIdToFollow } }
         );
 
-        // Add follow request to the user being followed
+        // Update the followed user's followers array
         await db.collection('users').updateOne(
             { _id: userIdToFollow },
-            { $addToSet: { followRequests: currentUserId } }
+            { $addToSet: { followers: currentUserId } }
         );
 
-        res.status(200).json({ message: 'Follow request sent successfully' });
+        res.status(200).json({ message: 'Now following user' });
     } catch (error) {
         console.error('Error following user:', error);
         res.status(500).json({ error: 'Server error while following user' });
@@ -347,6 +349,12 @@ export const unfollowUser = async (req, res) => {
             { $pull: { following: userIdToUnfollow } }
         );
 
+        // Remove the current user from the unfollowed user's followers array 
+        await db.collection('users').updateOne(
+            { _id: userIdToUnfollow },
+            { $pull: { followers: currentUserId } }
+        );
+
         res.status(200).json({ message: 'Unfollowed user successfully' });
     } catch (error) {
         console.error('Error unfollowing user:', error);
@@ -354,6 +362,8 @@ export const unfollowUser = async (req, res) => {
     }
 };
 
+
+// Function to get FollwedUsers
 export const getFollowedUsers = async (req, res) => {
     try {
         const db = getDB();
@@ -373,6 +383,38 @@ export const getFollowedUsers = async (req, res) => {
     } catch (error) {
         console.error('Error fetching followed users:', error);
         res.status(500).json({ error: 'Server error while retrieving followed users' });
+    }
+};
+
+// Function to get user post that current user follows
+export const getUserPostsByUsername = async (req, res) => {
+    try {
+        const db = getDB();
+        const username = req.params.username;
+        const currentUserId = req.session.userId; 
+
+        const targetUser = await db.collection('users').findOne({ username });
+        const currentUser = await db.collection('users').findOne({ _id: new ObjectId(currentUserId) });
+
+        if (!targetUser) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Check if current user is following the target user
+        if (!currentUser.following.includes(targetUser._id.toString())) {
+            return res.status(403).json({ error: 'You must be following this user to view their posts' });
+        }
+
+        const posts = await db.collection('posts').find({ createdBy: targetUser._id }).toArray();
+        const formattedPosts = posts.map(post => ({
+            ...post,
+            createdBy: username,
+        }));
+
+        res.status(200).json(formattedPosts);
+    } catch (error) {
+        console.error('Error fetching user posts:', error);
+        res.status(500).json({ error: 'Server error while retrieving user posts' });
     }
 };
 

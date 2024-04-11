@@ -1,7 +1,5 @@
 
 import { loadLoginPage } from './login.js';
-import { loadComments, hideComments} from './profile.js';
-
 
 // function to render header
 export function renderHeader() {
