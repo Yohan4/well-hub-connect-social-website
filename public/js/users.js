@@ -1,4 +1,3 @@
-
 import { renderHeader, renderFooter, searchbar, setupEventListeners, checkLoginStatus, loginLogout } from './common.js';
 
 // Function to render user cards
@@ -21,7 +20,6 @@ window.checkFollowStatus = function(username, isFollowing) {
         window.location.href = `#/user/${username}`;
     }
 };
-
 
 //function to display users page
 export function usersPage() {
@@ -64,16 +62,20 @@ export function usersPage() {
                     const isFollowing = currentUser && currentUser.following && currentUser.following.includes(user._id);
                     const userCard = renderUserCard(user, isFollowing);
                     suggestionsContainer.innerHTML += userCard;
+                });
 
-                    // Add event listener to the follow button
-                    const followButton = suggestionsContainer.querySelector(`.users-card[data-user-id="${user._id}"] .follow-button`);
-                    followButton.addEventListener('click', () => {
+                // Event delegation: Attach event listener to the suggestions container
+                suggestionsContainer.addEventListener('click', (event) => {
+                    if (event.target.classList.contains('follow-button')) {
+                        const userId = event.target.getAttribute('data-user-id');
+                        const isFollowing = event.target.textContent === 'Following';
+
                         if (isFollowing) {
-                            unfollowUser(user._id);
+                            unfollowUser(userId);
                         } else {
-                            followUser(user._id);
+                            followUser(userId);
                         }
-                    });
+                    }
                 });
             } else {
                 console.error('Expected an array of suggested users but received:', suggestedUsers);
@@ -85,14 +87,14 @@ export function usersPage() {
     });
 
     setupEventListeners();
-} 
+}
 
 function updateFollowButtonState(userId, isFollowing) {
     const userCard = document.querySelector(`.users-card[data-user-id="${userId}"]`);
     if (userCard) {
         const followButton = userCard.querySelector('.follow-button');
-        followButton.textContent = isFollowing ? 'Follow' : 'Following';
-        followButton.classList.toggle('is-following', !isFollowing);
+        followButton.textContent = isFollowing ? 'Following' : 'Follow';
+        followButton.classList.toggle('is-following', isFollowing);
     }
 }
 
@@ -104,7 +106,7 @@ function followUser(userId) {
     .then(response => response.json())
     .then(data => {
         if (data.message === 'Follow request sent successfully' || data.message === 'Now following user') {
-            updateFollowButtonState(userId, false); 
+            updateFollowButtonState(userId, true);
         } else {
             console.error('Failed to follow user:', data.message);
         }
@@ -122,7 +124,7 @@ function unfollowUser(userId) {
     .then(response => response.json())
     .then(data => {
         if (data.message === 'Unfollowed user successfully') {
-            updateFollowButtonState(userId, true); 
+            updateFollowButtonState(userId, false);
         } else {
             console.error('Failed to unfollow user:', data.message);
         }
