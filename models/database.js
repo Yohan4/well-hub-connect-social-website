@@ -2,10 +2,10 @@
 import { MongoClient, ServerApiVersion} from 'mongodb';
 
 //Connection details
-const password = "zjprvwaptvYZTHSq";
-const userName = "Akilesh";
-const server =  "cluster0.o0iuy6m.mongodb.net";
-const dbName = 'test2';
+const password = "*******";
+const userName = "******";
+const server =  "***********";
+const dbName = '******';
 
 //Encode special characters
 const encodedUsername = encodeURIComponent(userName);
